@@ -6,12 +6,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.nameless.impactful.api.PropertiesReader;
-import com.nameless.impactful.capabilities.ImpactfulCap;
-import com.nameless.impactful.capabilities.ImpactfulCapabilities;
 import com.nameless.impactful.client.CameraEngine;
 import com.nameless.impactful.client.RadialBlurEngine;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.compress.utils.Lists;
@@ -55,22 +54,16 @@ public class VFXPropertiesReader {
             if(!deserialized.shakeEventList.isEmpty()){
                 deserialized.shakeEventList.forEach((entry ->
                         animation.addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.SimpleEvent.create((entityPatch, animation1, params) -> {
-                            if(entityPatch.getOriginal() instanceof Player player){
-                                ImpactfulCap impactfulCap = player.getCapability(ImpactfulCapabilities.INSTANCE).orElse(null);
-                                if(impactfulCap != null){
-                                    impactfulCap.ShakeCam(entry);
-                                }
+                            if(entityPatch.getOriginal() == Minecraft.getInstance().player){
+                                CameraEngine.getInstance().shakeCamera(entry);
                             }
-                                }, AnimationEvent.Side.CLIENT))));
+                        }, AnimationEvent.Side.CLIENT))));
             }
             if(!deserialized.blurEventList.isEmpty()){
                 deserialized.blurEventList.forEach((entry ->
                         animation.addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.SimpleEvent.create((entityPatch, animation1, params) -> {
-                            if(entityPatch.getOriginal() instanceof Player player){
-                                ImpactfulCap impactfulCap = player.getCapability(ImpactfulCapabilities.INSTANCE).orElse(null);
-                                if(impactfulCap != null){
-                                    impactfulCap.applyBlur(entry);
-                                }
+                            if(entityPatch.getOriginal() == Minecraft.getInstance().player){
+                                RadialBlurEngine.getInstance().applyRadialBlur(entry);
                             }
                         }, AnimationEvent.Side.CLIENT))));
             }
@@ -110,7 +103,7 @@ public class VFXPropertiesReader {
                         int phase = GsonHelper.getAsInt(entry, "phase");
                         float strength = GsonHelper.getAsFloat(entry, "strength");
                         int duration = GsonHelper.getAsInt(entry, "duration");
-                        int decay_time = entry.has("decay_time") ? GsonHelper.getAsInt(entry, "decay_time") : 0;
+                        int decay_time = entry.has("decay_time") ? GsonHelper.getAsInt(entry, "decay_time") : Mth.floor(0.9 * duration);
                         property.radial_blur_map.put(phase, new RadialBlurEngine.RadialBlur(duration, strength, decay_time));
                     });
                 }
@@ -121,7 +114,7 @@ public class VFXPropertiesReader {
                 if(shakeEntry != null){
                     float strength = GsonHelper.getAsFloat(shakeEntry, "strength");
                     int duration = GsonHelper.getAsInt(shakeEntry, "duration");
-                    int decay_time = shakeEntry.has("decay_time") ? GsonHelper.getAsInt(shakeEntry, "decay_time") : 0;
+                    int decay_time = shakeEntry.has("decay_time") ? GsonHelper.getAsInt(shakeEntry, "decay_time") : Mth.floor(0.9 * duration);
                     property.shakeEventList.add(new CameraEngine.ShakeEntry(strength, duration, decay_time));
                 }
             }
@@ -131,7 +124,7 @@ public class VFXPropertiesReader {
                 if(blurEntry != null){
                     float strength = GsonHelper.getAsFloat(blurEntry, "strength");
                     int duration = GsonHelper.getAsInt(blurEntry, "duration");
-                    int decay_time = blurEntry.has("decay_time") ? GsonHelper.getAsInt(blurEntry, "decay_time") : 0;
+                    int decay_time = blurEntry.has("decay_time") ? GsonHelper.getAsInt(blurEntry, "decay_time") : Mth.floor(0.9 * duration);
                     property.blurEventList.add(new RadialBlurEngine.RadialBlur(duration, strength, decay_time));
                 }
             }

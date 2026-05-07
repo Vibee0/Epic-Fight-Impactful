@@ -28,6 +28,7 @@ public class CPApplyShake {
         buf.writeInt(time);
         buf.writeFloat(strength);
         buf.writeFloat(frequency);
+        buf.writeInt(decay_time);
     }
 
     public void handle(Supplier<NetworkEvent.Context> context)

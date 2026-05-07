@@ -12,6 +12,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -31,6 +32,11 @@ public class EventHandler {
                                 .then(RadialBlurCommand.register())
                         )
         );
+    }
+
+    @SubscribeEvent
+    public void registerCap(RegisterCapabilitiesEvent e){
+        e.register(ImpactfulCap.class);
     }
 
     @SubscribeEvent

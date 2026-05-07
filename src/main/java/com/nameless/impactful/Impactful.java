@@ -27,6 +27,7 @@ public class Impactful {
 
     private void commonSetup(final FMLCommonSetupEvent event){
         NetWorkManger.register();
+
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

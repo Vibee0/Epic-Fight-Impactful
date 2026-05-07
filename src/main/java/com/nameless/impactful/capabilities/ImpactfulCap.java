@@ -2,8 +2,6 @@ package com.nameless.impactful.capabilities;
 
 import com.nameless.impactful.api.HitStopPropertiesReader;
 import com.nameless.impactful.api.ICapabilityItem;
-import com.nameless.impactful.client.CameraEngine;
-import com.nameless.impactful.client.RadialBlurEngine;
 import com.nameless.impactful.network.CPApplyVFX;
 import com.nameless.impactful.network.NetWorkManger;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -11,8 +9,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -82,16 +78,6 @@ public class ImpactfulCap {
                 event.getPlayerPatch().getOriginal().getEntityData().set(HIT_STOP, false);
             });
         }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void ShakeCam(CameraEngine.ShakeEntry entry){
-        CameraEngine.getInstance().shakeCamera(entry);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void applyBlur(RadialBlurEngine.RadialBlur blur){
-        RadialBlurEngine.getInstance().applyRadialBlur(blur);
     }
 
     public record HitStop(int duration, float speed){

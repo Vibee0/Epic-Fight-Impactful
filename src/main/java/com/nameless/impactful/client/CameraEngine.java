@@ -43,8 +43,8 @@ public class CameraEngine {
         queue.removeIf(entry -> {
             entry.remainingTicks--;
             if(entry.remainingTicks < entry.decay_time){
-                entry.strength *= 0.97;
-                entry.frequency *= 0.97;
+                entry.strength *= 0.98;
+                entry.frequency *= 0.98;
             }
             return entry.remainingTicks <= 0;
         });

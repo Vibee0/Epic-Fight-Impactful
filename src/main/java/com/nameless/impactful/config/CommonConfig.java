@@ -1,14 +1,14 @@
 package com.nameless.impactful.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 
 public class CommonConfig {
-    public static final ForgeConfigSpec SPEC;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_HIT_STOP;
+    public static final ModConfigSpec SPEC;
+    public static final ModConfigSpec.ConfigValue<Boolean> DISABLE_HIT_STOP;
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.push("disable hit stop");
         DISABLE_HIT_STOP = builder.define("disable_hit_stop", false);

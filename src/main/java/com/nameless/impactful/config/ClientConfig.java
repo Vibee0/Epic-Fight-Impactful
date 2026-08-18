@@ -1,15 +1,15 @@
 package com.nameless.impactful.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ClientConfig {
-    public static final ForgeConfigSpec SPEC;
-    public static ForgeConfigSpec.ConfigValue<Double> SCREEN_SHAKE_AMPLITUDE_RATE;
-    public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_SCREEN_SHAKE;
-    public static ForgeConfigSpec.ConfigValue<Boolean> DISABLE_RADIAL_BLUR;
-    public static ForgeConfigSpec.ConfigValue<Double> RADIAL_BLUR_INTENSITY_RATE;
+    public static final ModConfigSpec SPEC;
+    public static ModConfigSpec.ConfigValue<Double> SCREEN_SHAKE_AMPLITUDE_RATE;
+    public static ModConfigSpec.ConfigValue<Boolean> DISABLE_SCREEN_SHAKE;
+    public static ModConfigSpec.ConfigValue<Boolean> DISABLE_RADIAL_BLUR;
+    public static ModConfigSpec.ConfigValue<Double> RADIAL_BLUR_INTENSITY_RATE;
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.push("global setting");
         DISABLE_SCREEN_SHAKE = builder.define("disable_screen_shake", false);

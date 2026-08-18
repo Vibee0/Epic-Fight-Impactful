@@ -1,41 +1,39 @@
 package com.nameless.impactful.network;
 
+import com.nameless.impactful.Impactful;
 import com.nameless.impactful.client.CameraEngine;
 import com.nameless.impactful.client.RadialBlurEngine;
 import com.nameless.impactful.config.ClientConfig;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record CPApplyVFX(int weaponCategoryId, int animationId, float elapsedTime) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<CPApplyVFX> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(Impactful.MOD_ID, "vfx")
+    );
 
-public class CPApplyVFX {
-    private final int weaponCategoryId;
-    private final int animationId;
-    private final float elapsedTime;
-    public CPApplyVFX(int weaponCategoryId, int animationId, float elapsedTime){
-        this.weaponCategoryId = weaponCategoryId;
-        this.animationId = animationId;
-        this.elapsedTime = elapsedTime;
-    }
-    public CPApplyVFX(FriendlyByteBuf buf){
-        this.weaponCategoryId = buf.readInt();
-        this.animationId = buf.readInt();
-        this.elapsedTime = buf.readFloat();
-    }
-    public void encode(FriendlyByteBuf buf){
-        buf.writeInt(weaponCategoryId);
-        buf.writeInt(animationId);
-        buf.writeFloat(elapsedTime);
+    public static final StreamCodec<ByteBuf, CPApplyVFX> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, CPApplyVFX::weaponCategoryId,
+            ByteBufCodecs.VAR_INT, CPApplyVFX::animationId,
+            ByteBufCodecs.FLOAT, CPApplyVFX::elapsedTime,
+            CPApplyVFX::new
+    );
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
-        context.get().enqueueWork(() -> {
+    public static void handler(final CPApplyVFX data, final IPayloadContext context) {
+        context.enqueueWork(() -> {
             if(!ClientConfig.DISABLE_SCREEN_SHAKE.get())
-                CameraEngine.getInstance().shakeCameraByAnim(this.animationId, this.elapsedTime);
+                CameraEngine.getInstance().shakeCameraByAnim(data.animationId(), data.elapsedTime());
             if(!ClientConfig.DISABLE_RADIAL_BLUR.get())
-                RadialBlurEngine.getInstance().applyRadialBlurByAnim(this.animationId, this.elapsedTime);
+                RadialBlurEngine.getInstance().applyRadialBlurByAnim(data.animationId(), data.elapsedTime());
         });
-        context.get().setPacketHandled(true);
     }
 }

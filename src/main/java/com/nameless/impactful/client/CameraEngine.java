@@ -6,15 +6,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.types.AttackAnimation;
-import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.events.engine.RenderEngine;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 
 import java.util.Comparator;
@@ -74,7 +74,7 @@ public class CameraEngine {
         Player player = Minecraft.getInstance().player;
         if(player == null) return;
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        RenderItemBase renderitembase = ClientEngine.getInstance().renderEngine.getItemRenderer(stack);
+        RenderItemBase renderitembase = RenderEngine.getInstance().getItemRenderer(stack);
         ShakeEntry shakeEntry = ((IRenderItemBase)renderitembase).getShakeEntry() != null ? ((IRenderItemBase)renderitembase).getShakeEntry() : default_entry;
         if(AnimationManager.byId(animationId).get() instanceof AttackAnimation attackAnimation){
             shakeEntry = attackAnimation.getPhaseByTime(elapsedTime).getProperty(SCREEN_SHAKE).orElse(shakeEntry);
@@ -83,7 +83,7 @@ public class CameraEngine {
         this.shakeCamera(shakeEntry);
     }
 
-    @Mod.EventBusSubscriber(modid = Impactful.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Impactful.MOD_ID, value = Dist.CLIENT)
     public static class Events {
         @SubscribeEvent(priority = EventPriority.LOW)
         public static void cameraSetupEvent(ViewportEvent.ComputeCameraAngles event) {

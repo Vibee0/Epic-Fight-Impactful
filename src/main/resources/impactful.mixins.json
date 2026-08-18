@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "com.nameless.impactful.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "client.AnimationManagerClientMixin",
+    "client.ClientLevelUtilMixin",
+    "client.RenderItemBaseMixin",
+    "common.AnimationManagerCommonMixin",
+    "common.AttackAnimationMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

@@ -1,39 +1,36 @@
 package com.nameless.impactful.network;
 
+import com.nameless.impactful.Impactful;
 import com.nameless.impactful.client.RadialBlurEngine;
 import com.nameless.impactful.config.ClientConfig;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.function.Supplier;
+public record CPApplyBlur(int time, float strength, int decay_time) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<CPApplyBlur> TYPE = new CustomPacketPayload.Type<>(
+            ResourceLocation.fromNamespaceAndPath(Impactful.MOD_ID, "blur")
+    );
 
-public class CPApplyBlur {
-    private final int time;
-    private final float strength;
-    private final int decay_time;
+    public static final StreamCodec<ByteBuf, CPApplyBlur> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, CPApplyBlur::time,
+            ByteBufCodecs.FLOAT, CPApplyBlur::strength,
+            ByteBufCodecs.VAR_INT, CPApplyBlur::decay_time,
+            CPApplyBlur::new
+    );
 
-    public CPApplyBlur(int time, float strength, int decay_time){
-        this.time = time;
-        this.strength = strength;
-        this.decay_time = decay_time;
-    }
-    public CPApplyBlur(FriendlyByteBuf buf){
-        this.time = buf.readInt();
-        this.strength = buf.readFloat();
-        this.decay_time = buf.readInt();
-    }
-    public void encode(FriendlyByteBuf buf){
-        buf.writeInt(time);
-        buf.writeFloat(strength);
-        buf.writeInt(decay_time);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> context)
-    {
-        context.get().enqueueWork(() -> {
+    public static void handler(final CPApplyBlur data, final IPayloadContext context) {
+        context.enqueueWork(() -> {
             if(!ClientConfig.DISABLE_RADIAL_BLUR.get())
-                RadialBlurEngine.getInstance().applyRadialBlur(time, strength, decay_time);
+                RadialBlurEngine.getInstance().applyRadialBlur(data.time, data.strength, data.decay_time);
         });
-        context.get().setPacketHandled(true);
     }
 }

@@ -11,14 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.types.AttackAnimation;
-import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.events.engine.RenderEngine;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public class RadialBlurEngine {
         Player player = Minecraft.getInstance().player;
         if(player == null) return;
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        RenderItemBase renderitembase = ClientEngine.getInstance().renderEngine.getItemRenderer(stack);
+        RenderItemBase renderitembase = RenderEngine.getInstance().getItemRenderer(stack);
         radialBlur = ((IRenderItemBase)renderitembase).getRadialBlur() != null ? ((IRenderItemBase)renderitembase).getRadialBlur() : default_entry;
         if(AnimationManager.byId(animationId).get() instanceof AttackAnimation attackAnimation){
             radialBlur = attackAnimation.getPhaseByTime(elapsedTime).getProperty(RADIAL_BLUR).orElse(radialBlur);
@@ -89,7 +89,7 @@ public class RadialBlurEngine {
     }
 
 
-    @Mod.EventBusSubscriber(modid = Impactful.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Impactful.MOD_ID, value = Dist.CLIENT)
     public static class Events {
         @SubscribeEvent
         public static void onRenderTick(RenderLevelStageEvent e) throws IOException {
@@ -103,7 +103,7 @@ public class RadialBlurEngine {
                 blurChain.passes.get(0).getEffect().safeGetUniform("center").set(centerX, centerY);
             }
             if (blurChain != null && Minecraft.getInstance().player != null && e.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-                instance.tick(e.getPartialTick());
+                instance.tick(e.getPartialTick().getGameTimeDeltaPartialTick(true));
             }
         }
     }

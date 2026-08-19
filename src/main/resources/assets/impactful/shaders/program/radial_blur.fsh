@@ -20,5 +20,5 @@ void main() {
         color += texture(DiffuseSampler, texCoord - step * scale);
         color += texture(DiffuseSampler, texCoord + step * scale);
     }
-    fragColor = color / float(2 * samples + 1);
+    fragColor = vec4(color.rgb / float(2 * samples + 1), 1.0);
 }

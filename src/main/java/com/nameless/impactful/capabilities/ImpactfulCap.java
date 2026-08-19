@@ -4,6 +4,7 @@ import com.nameless.impactful.api.HitStopPropertiesReader;
 import com.nameless.impactful.network.CPApplyHitStop;
 import com.nameless.impactful.network.CPApplyVFX;
 import com.nameless.impactful.network.NetWorkManger;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;

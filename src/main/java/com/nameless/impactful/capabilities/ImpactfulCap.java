@@ -1,5 +1,6 @@
 package com.nameless.impactful.capabilities;
 
+import com.nameless.impactful.Impactful;
 import com.nameless.impactful.api.HitStopPropertiesReader;
 import com.nameless.impactful.network.CPApplyHitStop;
 import com.nameless.impactful.network.CPApplyVFX;
@@ -8,6 +9,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.event.EpicFightEventHooks;
@@ -17,6 +22,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 
+@EventBusSubscriber(modid = Impactful.MOD_ID)
 public class ImpactfulCap {
 
     public void onInitiate(Player player) {
@@ -65,6 +71,19 @@ public class ImpactfulCap {
                     setHitStop(false, player);
                     }
                 }, IdentifierProvider.permanent());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        HitStopData hitStopData = player.getData(ImpactfulAttachments.HIT_STOP);
+        if (hitStopData.HIT_STOP) {
+            if (hitStopData.HIT_STOP_TIME > 0) {
+                hitStopData.HIT_STOP_TIME--;
+            } else {
+                setHitStop(false, player);
+            }
         }
     }
 

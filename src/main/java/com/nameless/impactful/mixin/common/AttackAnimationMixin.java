@@ -25,7 +25,6 @@ public class AttackAnimationMixin {
                 float k = 1;
                 if(hitStopData.HIT_STOP_TIME > 0) {
                     k = hitStopData.HIT_STOP_SPEED;
-                    hitStopData.HIT_STOP_TIME--;
                 } else {
                     ImpactfulCap.setHitStop(false, player);
                 }
